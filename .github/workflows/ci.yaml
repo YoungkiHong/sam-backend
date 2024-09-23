@@ -49,12 +49,14 @@ jobs:
         - name: Get date and increment value
           id: date-increment
           # env:
-          #   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}          
+          #   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          shell: bash          
           run: |
             echo ${{ secrets.GH_TOKEN }} | gh auth login --with-token
             DATE=$(TZ=Asia/Seoul date +%Y%m%d)
             INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
             echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=${IMAGE_TAG}"
             echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
 
@@ -136,12 +138,11 @@ jobs:
             version: latest
           
         - name: Update Kubernetes manifests
-          env:
-            IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
           run: |
+            IMAGE_TAG=${{ needs.build.outputs.image_tag  }}
             kustomize version
             cd sam-backend/overlays/${{ inputs.environment }}
-            kustomize edit set image ${{ vars.APPCR_REPOSITORY }}=${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            kustomize edit set image ${{ vars.APPCR_REPOSITORY }}=${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${IMAGE_TAG}
 
 
   #       # - name: Setup Kustomize
@@ -152,11 +153,10 @@ jobs:
   #       #     sed -i 's|image: ghcr.io/.*/my-app:.*|image: ghcr.io/${{ github.repository }}/my-app:latest|' k8s/deployment.yaml
 
         - name: Commit and push changes
-          env:
-            IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
           run: |
+            IMAGE_TAG=${{ needs.build.outputs.image_tag  }}
             git config --global user.name 'github-actions[bot]'
             git config --global user.email 'github-actions[bot]@users.noreply.github.com'            
             git add .
-            git commit -m 'k8s manifest for image tag: ${{ env.IMAGE_TAG }}'
+            git commit -m 'k8s manifest for image tag: ${IMAGE_TAG}'
             git push origin main -f
