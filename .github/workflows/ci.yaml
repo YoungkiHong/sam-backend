@@ -46,6 +46,8 @@ jobs:
 
         - name: Get date and increment value
           id: date-increment
+          with:
+            token: ${{ secrets.GH_TOKEN }}
           run: |
             DATE=$(TZ=Asia/Seoul date +%Y%m%d)
             INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
