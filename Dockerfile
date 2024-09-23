@@ -1,5 +1,8 @@
-FROM alpine:3.18.0
-RUN apk add --no-cache bash java-cacerts openjdk17-jdk
+FROM cepgbaseacr.azurecr.io/docker.io/openjdk:17-slim
+RUN apk add --no-cache bash java-cacerts
+
+# FROM alpine:3.18.0
+# RUN apk add --no-cache bash java-cacerts openjdk17-jdk
 
 # RUN apk add --no-cache \
 #         bash \
