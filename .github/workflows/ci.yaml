@@ -123,8 +123,9 @@ jobs:
         - name: Checkout manifests repository
           uses: actions/checkout@v4
           with:
-            repository: YoungkiHong/sam-manifests.git
+            repository: YoungkiHong/sam-manifests
             token: ${{ secrets.GH_TOKEN }}
+            ref: main
             # path: sam-manifests
 
         - name: Kubectl tool installer
