@@ -18,6 +18,8 @@ jobs:
   build:
     name: (${{ inputs.environment }}) Push Container image and Update K8s Manifests
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.date-increment.outputs.image_tag }}
 
     steps:
         - name: Checkout repository
