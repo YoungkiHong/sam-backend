@@ -88,7 +88,7 @@ jobs:
           env:
               IMAGE_TAG: ${{ env.IMAGE_TAG }}
           run: |
-                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
 
   #       # - name: Build and push Docker image
   #       #   uses: docker/build-push-action@v4
@@ -116,26 +116,26 @@ jobs:
   #     needs: build
 
   #     steps:
-  #       - name: Checkout repository
-  #         uses: actions/checkout@v4
-  #         with:
-  #           repository: YoungkiHong/sam-manifests.git
-  #           token: ${{ secrets.GITHUB_TOKEN }}
-  #           path: manifests-repo
+        - name: Checkout repository
+          uses: actions/checkout@v4
+          with:
+            repository: YoungkiHong/sam-manifests.git
+            token: ${{ secrets.GH_TOKEN }}
+            path: sam-backend
 
-  #       - name: Kubectl tool installer
-  #         uses: Azure/setup-kubectl@v4.0.0
-  #         run: |
-  #           kustomize version
-  #         with:
-  #           version: latest
+        - name: Kubectl tool installer
+          uses: Azure/setup-kubectl@v4.0.0
+          run: |
+            kustomize version
+          with:
+            version: latest
 
-  #       - name: Update Kubernetes manifests
-  #         env:
-  #           IMAGE_TAG: ${{ env.IMAGE_TAG }}
-  #         run: |
-  #           cd manifests/overlays/${{ inputs.environment }}
-  #           kustomize edit set image ${{ vars.ACR_REPOSITORY }}=${{ vars.ACR_LOGIN_SERVER }}/${{ vars.ACR_REPOSITORY }}-${{ inputs.environment }}:${{ env.IMAGE_TAG }}
+        - name: Update Kubernetes manifests
+          env:
+            IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          run: |
+            cd sam-backend/overlays/${{ inputs.environment }}
+            kustomize edit set image ${{ vars.APPCR_REPOSITORY }}=${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
 
   #       # - name: Setup Kustomize
@@ -145,12 +145,12 @@ jobs:
   #       #   run: |
   #       #     sed -i 's|image: ghcr.io/.*/my-app:.*|image: ghcr.io/${{ github.repository }}/my-app:latest|' k8s/deployment.yaml
 
-  #       - name: Commit and push changes
-  #         env:
-  #           IMAGE_TAG: ${{ env.IMAGE_TAG }}
-  #         run: |
-  #           git config --global user.name 'github-actions[bot]'
-  #           git config --global user.email 'github-actions[bot]@users.noreply.github.com'            
-  #           git add .
-  #           git commit -m 'k8s manifest for image tag: ${{ env.IMAGE_TAG }}'
-  #           git push origin main -f
+        - name: Commit and push changes
+          env:
+            IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          run: |
+            git config --global user.name 'github-actions[bot]'
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'            
+            git add .
+            git commit -m 'k8s manifest for image tag: ${{ env.IMAGE_TAG }}'
+            git push origin main -f
