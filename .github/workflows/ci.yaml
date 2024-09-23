@@ -46,10 +46,10 @@ jobs:
 
         - name: Get date and increment value
           id: date-increment
-          env:
-            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}          
+          # env:
+          #   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}          
           run: |
-            echo $GITHUB_TOKEN | gh auth login --with-token
+            echo ${{ secrets.GH_TOKEN }} | gh auth login --with-token
             DATE=$(TZ=Asia/Seoul date +%Y%m%d)
             INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
             echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
