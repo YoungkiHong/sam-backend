@@ -56,8 +56,9 @@ jobs:
             DATE=$(TZ=Asia/Seoul date +%Y%m%d)
             INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
             echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
-            echo "IMAGE_TAG=${IMAGE_TAG}"
-            echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+            echo "IMAGE_TAG=${{ env.IMAGE_TAG }}"
+            echo "image_tag=${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+            echo $GITHUB_OUTPUT
 
 
 
