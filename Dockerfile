@@ -1,5 +1,11 @@
-FROM cepgbaseacr.azurecr.io/docker.io/openjdk:17-slim
-RUN apk add --no-cache bash java-cacerts
+FROM docker.io/openjdk:17-slim
+
+RUN apt-get update && apt-get install -y \
+    bash \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+    
+# RUN apk add --no-cache bash java-cacerts
 
 # FROM alpine:3.18.0
 # RUN apk add --no-cache bash java-cacerts openjdk17-jdk
