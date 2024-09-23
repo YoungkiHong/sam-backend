@@ -76,8 +76,8 @@ jobs:
           env:
             IMAGE_TAG: ${{ env.IMAGE_TAG }}
           run: |
-                docker build -t ${{ vars.BASECR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
-                docker tag ${{ vars.BASECR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                docker build -t ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
+                docker tag ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
 
         - name: Log in to Target ACR
           uses: azure/docker-login@v1
