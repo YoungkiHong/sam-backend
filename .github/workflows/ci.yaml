@@ -92,8 +92,8 @@ jobs:
           env:
               IMAGE_TAG: ${{ env.IMAGE_TAG }}
           run: |
-                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
-
+                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
   #       # - name: Build and push Docker image
   #       #   uses: docker/build-push-action@v4
   #       #   with:
