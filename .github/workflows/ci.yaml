@@ -48,7 +48,7 @@ jobs:
           id: date-increment
           run: |
             DATE=$(TZ=Asia/Seoul date +%Y%m%d)
-            INCREMENT=$(gh api repos/${REPO}/commits --paginate | jq length)
+            INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
             echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
             echo "IMAGE_TAG=${DATE}.${INCREMENT}"
 
