@@ -50,6 +50,7 @@ jobs:
             DATE=$(TZ=Asia/Seoul date +%Y%m%d)
             INCREMENT=$(git rev-list --count HEAD)
             echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
+            echo "IMAGE_TAG=${DATE}.${INCREMENT}"
 
 
 
