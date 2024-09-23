@@ -116,25 +116,24 @@ jobs:
   #     needs: build
 
   #     steps:
-        - name: Checkout repository
+        - name: Checkout manifests repository
           uses: actions/checkout@v4
           with:
             repository: YoungkiHong/sam-manifests.git
             token: ${{ secrets.GH_TOKEN }}
-            path: sam-backend
+            path: sam-manifests
 
         - name: Kubectl tool installer
           uses: Azure/setup-kubectl@v4.0.0
-          run: |
-            kustomize version
           with:
             version: latest
-
+          
         - name: Update Kubernetes manifests
           env:
             IMAGE_TAG: ${{ env.IMAGE_TAG }}
           run: |
-            cd sam-backend/overlays/${{ inputs.environment }}
+            kustomize version
+            cd sam-manifests/sam-backend/overlays/${{ inputs.environment }}
             kustomize edit set image ${{ vars.APPCR_REPOSITORY }}=${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
 
