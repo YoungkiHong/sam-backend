@@ -53,7 +53,7 @@ jobs:
             DATE=$(TZ=Asia/Seoul date +%Y%m%d)
             INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
             echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
-            echo "IMAGE_TAG=${DATE}.${INCREMENT}"
+            echo "::set-output name=image_tag::${IMAGE_TAG}"
 
 
 
@@ -135,7 +135,7 @@ jobs:
           
         - name: Update Kubernetes manifests
           env:
-            IMAGE_TAG: ${{ env.IMAGE_TAG }}
+            IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
           run: |
             kustomize version
             cd sam-backend/overlays/${{ inputs.environment }}
