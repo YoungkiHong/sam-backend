@@ -1,0 +1,146 @@
+name: Publish image and update manifests
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prd
+
+
+
+jobs:
+  build:
+    name: (${{ inputs.environment }}) Push Container image and Update K8s Manifests
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            fetch-depth: 1
+
+        - name: Set up JDK 17
+          uses: actions/setup-java@v4
+          with:
+            java-version: '17'
+            distribution: 'temurin'
+            cache: maven
+
+        # - name: Cache Maven packages
+        #   uses: actions/cache@v3
+        #   with:
+        #     path: ~/.m2/repository
+        #     key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        #     restore-keys: |
+        #       ${{ runner.os }}-maven-
+
+        - name: Get image tag
+          run: echo "IMAGE_TAG=$(TZ=Asia/Seoul date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+
+  #       - name: Build with Maven
+  #         run: mvn -B package --file pom.xml
+  #         # run: mvn -B -DskipTests package --file ./pom.xml -s ./settings.xml
+
+  #       - name: Set up Docker Buildx
+  #         uses: docker/setup-buildx-action@vv3.6.1
+
+
+  #       - name: Log in to Base ACR
+  #         uses: azure/docker-login@v1
+  #         with:
+  #           login-server: ${{ vars.BASECR_LOGIN_SERVER }}
+  #           username: ${{ secrets.BASECR_USERNAME }}
+  #           password: ${{ secrets.BASECR_PASSWORD }}
+
+  #       - name: 'Build & Tag Image'
+  #         run: |
+  #               docker build -t ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} -f Dockerfile-maven .
+  #               docker tag ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
+
+  #       - name: Log in to Target ACR
+  #         uses: azure/docker-login@v1
+  #         env:
+  #           IMAGE_TAG: ${{ env.IMAGE_TAG }}
+  #         with:
+  #           login-server: ${{ vars.APPCR_LOGIN_SERVER }}
+  #           username: ${{ secrets.APPCR_USERNAME }}
+  #           password: ${{ secrets.APPCR_PASSWORD }}
+
+  #       - name: Push Docker Image
+  #         env:
+  #             IMAGE_TAG: ${{ env.IMAGE_TAG }}
+  #         run: |
+  #               docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+  #       # - name: Build and push Docker image
+  #       #   uses: docker/build-push-action@v4
+  #       #   with:
+  #       #     context: .
+  #       #     push: true
+  #       #     tags: ghcr.io/${{ github.repository }}/my-app:latest
+
+  #       # - name: Build and push Container image
+  #       #   uses: docker/build-push-action@v6.5.0
+  #       #   env:
+  #       #     IMAGE_TAG: ${{ env.IMAGE_TAG }}
+  #       #   with:
+  #       #     context: .
+  #       #     file: ./Dockerfile
+  #       #     push: true
+  #       #     cache-from: type=registry,ref=${{ vars.ACR_LOGIN_SERVER }}/${{ vars.ACR_REPOSITORY }}-cache
+  #       #     cache-to: type=registry,ref=${{ vars.ACR_LOGIN_SERVER }}/${{ vars.ACR_REPOSITORY }}-cache,mode=max
+  #       #     tags: | 
+  #       #       ${{ vars.ACR_LOGIN_SERVER }}/${{ vars.ACR_REPOSITORY }}-${{ inputs.environment }}:${{ env.IMAGE_TAG }}
+  #       #       ${{ vars.ACR_LOGIN_SERVER }}/${{ vars.ACR_REPOSITORY }}-${{ inputs.environment }}:latest        
+
+  # update-manifests:
+  #     runs-on: ubuntu-latest
+  #     needs: build
+
+  #     steps:
+  #       - name: Checkout repository
+  #         uses: actions/checkout@v4
+  #         with:
+  #           repository: YoungkiHong/sam-manifests.git
+  #           token: ${{ secrets.GITHUB_TOKEN }}
+  #           path: manifests-repo
+
+  #       - name: Kubectl tool installer
+  #         uses: Azure/setup-kubectl@v4.0.0
+  #         run: |
+  #           kustomize version
+  #         with:
+  #           version: latest
+
+  #       - name: Update Kubernetes manifests
+  #         env:
+  #           IMAGE_TAG: ${{ env.IMAGE_TAG }}
+  #         run: |
+  #           cd manifests/overlays/${{ inputs.environment }}
+  #           kustomize edit set image ${{ vars.ACR_REPOSITORY }}=${{ vars.ACR_LOGIN_SERVER }}/${{ vars.ACR_REPOSITORY }}-${{ inputs.environment }}:${{ env.IMAGE_TAG }}
+
+
+  #       # - name: Setup Kustomize
+  #       #   uses: imranismail/setup-kustomize@v1          
+
+  #       # - name: Update Kubernetes manifests
+  #       #   run: |
+  #       #     sed -i 's|image: ghcr.io/.*/my-app:.*|image: ghcr.io/${{ github.repository }}/my-app:latest|' k8s/deployment.yaml
+
+  #       - name: Commit and push changes
+  #         env:
+  #           IMAGE_TAG: ${{ env.IMAGE_TAG }}
+  #         run: |
+  #           git config --global user.name 'github-actions[bot]'
+  #           git config --global user.email 'github-actions[bot]@users.noreply.github.com'            
+  #           git add .
+  #           git commit -m 'k8s manifest for image tag: ${{ env.IMAGE_TAG }}'
+  #           git push origin main -f
