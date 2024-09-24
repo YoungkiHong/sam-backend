@@ -46,20 +46,26 @@ jobs:
         # - name: Get image tag
         #   run: echo "IMAGE_TAG=$(TZ=Asia/Seoul date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
-        - name: Get date and increment value          
-          # env:
-          #   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          shell: bash          
+        - name: Generate build ID
+          id: build-id
           run: |
-            echo ${{ secrets.GH_TOKEN }} | gh auth login --with-token
-            DATE=$(TZ=Asia/Seoul date +%Y%m%d)
-            INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
-            echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
+            echo "BUILD_ID=$(TZ=Asia/Seoul date +'%Y%m%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+        # - name: Get date and increment value          
+        #   # env:
+        #   #   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        #   shell: bash          
+        #   run: |
+        #     echo ${{ secrets.GH_TOKEN }} | gh auth login --with-token
+        #     DATE=$(TZ=Asia/Seoul date +%Y%m%d)
+        #     INCREMENT=$(gh api repos/${{ github.repository }}/commits --paginate | jq length)
+        #     echo "IMAGE_TAG=${DATE}.${INCREMENT}" >> $GITHUB_ENV
 
         - name: Set outputs image_tag
           id: date-increment
           run: |
-            echo "IMAGE_TAG=${IMAGE_TAG}"
+            # echo "IMAGE_TAG=${IMAGE_TAG}"
+            echo "IMAGE_TAG=${{ steps.build-id.outputs.BUILD_ID }}"
             echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
         - name: Build with Maven
