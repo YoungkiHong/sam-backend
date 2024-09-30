@@ -84,11 +84,11 @@ jobs:
             password: ${{ secrets.BASECR_PASSWORD }}
 
         - name: 'Build & Tag Image'
-          env:
-            IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          # env:
+          #   IMAGE_TAG: ${{ env.IMAGE_TAG }}
           run: |
-                docker build -t ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
-                docker tag ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
+                docker build -t ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${IMAGE_TAG} .
+                docker tag ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${IMAGE_TAG} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
 
         - name: Log in to Target ACR
           uses: azure/docker-login@v1
@@ -100,10 +100,10 @@ jobs:
             password: ${{ secrets.APPCR_PASSWORD }}
 
         - name: Push Docker Image
-          env:
-              IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          # env:
+          #     IMAGE_TAG: ${{ env.IMAGE_TAG }}
           run: |
-                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${IMAGE_TAG}
                 docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
   #       # - name: Build and push Docker image
   #       #   uses: docker/build-push-action@v4
