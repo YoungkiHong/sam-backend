@@ -59,11 +59,18 @@ jobs:
           id: build-id
           run: |
             TZ=Asia/Seoul
-            DATE=$(date +'%Y-%m-%dT00:00:00')
-            INCREMENT=$(git shortlog --all --no-merges -sne --since=${DATE} | awk '{sum += $1} END {print sum}')
-            echo "BUILD_ID=$(date +'%Y%m%d').${INCREMENT}" >> $GITHUB_OUTPUT
+            # DATE=$(date +'%Y-%m-%dT00:00:00')
+            TODAY=$(date +'%Y%m%d')
+            # BUILD_NUM=$(az acr repository show-tags --name cepgstapacr --repository ${{ vars.APPCR_REPOSITORY }} \
+            #   | jq -r '.[] | select(. != "latest" and contains("'$TODAY'"))' \
+            #   | sort -r | head -n 1 | sed 's/.*\.//' ); \
+            #   [ -n "$BUILD_NUM" ] || BUILD_NUM='0'; \
+            #   BUILD_NUM=$((BUILD_NUM + 1))
 
-            # echo "BUILD_ID=$(TZ=Asia/Seoul date +'%Y%m%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
+            # INCREMENT=$(git shortlog --all --no-merges -sne --since=${DATE} | awk '{sum += $1} END {print sum}')
+            echo "BUILD_ID=${TODAY}.${INCREMENT}" >> $GITHUB_OUTPUT
+
+            echo "BUILD_ID=$(TZ=Asia/Seoul date +'%Y%m%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
             # echo "BUILD_ID=$(date +'%Y%m%d')-${INCREMENT}" >> $GITHUB_OUTPUT
             git shortlog --all --no-merges -sne --since=${DATE} | awk '{sum += $1} END {print sum}'
 
