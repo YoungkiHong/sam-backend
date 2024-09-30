@@ -50,7 +50,7 @@ jobs:
           id: build-id
           run: |
             TZ=Asia/Seoul
-            DATE=$(date -v0H -v0M -v0S +'%Y-%m-%dT%H:%M:%S')
+            DATE=$(date +'%Y-%m-%dT00:00:00')
             INCREMENT=$(git shortlog --all --no-merges -sne --since=${DATE} | awk '{sum += $1} END {print sum}')
             echo "BUILD_ID=$(date +'%Y%m%d')-${INCREMENT}" >> $GITHUB_OUTPUT
 
