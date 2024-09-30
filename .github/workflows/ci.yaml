@@ -19,7 +19,7 @@ jobs:
     name: (${{ inputs.environment }}) Push Container image and Update K8s Manifests
     runs-on: ubuntu-latest
     outputs:
-      image_tag: ${{ steps.date-increment.outputs.image_tag }}
+      image_tag: ${{ steps.build-id.outputs.BUILD_ID }}
 
     steps:
         - name: Checkout repository
@@ -84,26 +84,24 @@ jobs:
             password: ${{ secrets.BASECR_PASSWORD }}
 
         - name: 'Build & Tag Image'
-          # env:
-          #   IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          env:
+            IMAGE_TAG: ${{ steps.build-id.outputs.BUILD_ID }}
           run: |
-                docker build -t ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${IMAGE_TAG} .
-                docker tag ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${IMAGE_TAG} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
+                docker build -t ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
+                docker tag ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }} ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
 
         - name: Log in to Target ACR
-          uses: azure/docker-login@v1
-          env:
-            IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          uses: azure/docker-login@v1          
           with:
             login-server: ${{ vars.APPCR_LOGIN_SERVER }}
             username: ${{ secrets.APPCR_USERNAME }}
             password: ${{ secrets.APPCR_PASSWORD }}
 
         - name: Push Docker Image
-          # env:
-          #     IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          env:
+            IMAGE_TAG: ${{ steps.build-id.outputs.BUILD_ID  }}
           run: |
-                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${IMAGE_TAG}
+                docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
                 docker push ${{ vars.APPCR_LOGIN_SERVER }}/${{ vars.APPCR_REPOSITORY }}:latest
   #       # - name: Build and push Docker image
   #       #   uses: docker/build-push-action@v4
