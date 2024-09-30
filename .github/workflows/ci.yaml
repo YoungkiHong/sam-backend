@@ -49,7 +49,12 @@ jobs:
         - name: Generate build ID
           id: build-id
           run: |
-            echo "BUILD_ID=$(TZ=Asia/Seoul date +'%Y%m%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
+            TZ=Asia/Seoul
+            DATE=$(date -v0H -v0M -v0S +'%Y-%m-%dT%H:%M:%S')
+            INCREMENT=$(git shortlog --all --no-merges -sne --since=${DATE} | awk '{sum += $1} END {print sum}')
+            echo "BUILD_ID=$(date +'%Y%m%d')-${INCREMENT}" >> $GITHUB_OUTPUT
+
+            # echo "BUILD_ID=$(TZ=Asia/Seoul date +'%Y%m%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
 
         # - name: Get date and increment value          
         #   # env:
