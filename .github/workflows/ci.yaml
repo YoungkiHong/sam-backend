@@ -28,6 +28,15 @@ jobs:
             token: ${{ secrets.GH_TOKEN }}
             fetch-depth: 1
 
+        - name: Enable Debugging
+          run: echo "ACTIONS_RUNNER_DEBUG=true" >> $GITHUB_ENV
+
+
+        - name: Enable Step Debugging
+          run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+
+
+
         - name: Set up JDK 17
           uses: actions/setup-java@v4
           with:
