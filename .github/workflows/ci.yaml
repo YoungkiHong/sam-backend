@@ -55,6 +55,8 @@ jobs:
             echo "BUILD_ID=$(date +'%Y%m%d')-${INCREMENT}" >> $GITHUB_OUTPUT
 
             # echo "BUILD_ID=$(TZ=Asia/Seoul date +'%Y%m%d')-${{ github.run_number }}" >> $GITHUB_OUTPUT
+            # echo "BUILD_ID=$(date +'%Y%m%d')-${INCREMENT}" >> $GITHUB_OUTPUT
+            git shortlog --all --no-merges -sne --since=${DATE} | awk '{sum += $1} END {print sum}'
 
         # - name: Get date and increment value          
         #   # env:
